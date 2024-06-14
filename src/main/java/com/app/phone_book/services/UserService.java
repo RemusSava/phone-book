@@ -2,6 +2,7 @@ package com.app.phone_book.services;
 
 import com.app.phone_book.models.User;
 import com.app.phone_book.repositories.UserRepository;
+import com.app.phone_book.validators.RegisterForm;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,24 @@ public class UserService {
 
     public User save(User user) {
 
+        return userRepository.save(user);
+    }
+
+    public User register(RegisterForm registerForm) {
+        // Check if user with the same email already exists
+        if (userRepository.findByEmail(registerForm.getEmail()) != null) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+
+        // Hash the password
+        String encodedPassword = passwordEncoder.encode(registerForm.getPassword());
+
+        // Create a new user
+        User user = new User();
+        user.setEmail(registerForm.getEmail());
+        user.setPassword(encodedPassword);
+
+        // Save the user in the database
         return userRepository.save(user);
     }
 
