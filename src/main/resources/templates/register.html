@@ -29,8 +29,10 @@
                                 <label for="confirmPassword" class="form-label">Confirm Password</label>
                                 <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                             </div>
-                            <div th:if="${error}" class="mb-3">
-                                <div class="alert alert-danger" role="alert" th:text="${error}"></div>
+                            <div th:if="${errors}">
+                                <ul>
+                                    <li th:each="error : ${errors}" th:text="${error}" style="color: red;"></li>
+                                </ul>
                             </div>
                             <div class="d-grid mt-5">
                                 <button type="submit" class="btn btn-primary btn-block">Register</button>

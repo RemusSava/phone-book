@@ -1,28 +1,26 @@
 package com.app.phone_book.validators;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
-@Setter
-@Getter
 @Data
 public class RegisterForm {
     @Email(message = "Invalid email address")
-    @NotEmpty(message = "Email cannot be empty")
+    @NotNull(message = "Email cannot be empty")
     private String email;
 
     @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters")
-    @NotEmpty(message = "Password cannot be empty")
+    @NotNull(message = "Password cannot be empty")
     private String password;
 
-    @NotEmpty(message = "Confirm Password cannot be empty")
+    @NotNull(message = "Confirm Password cannot be empty")
     private String confirmPassword;
 
+    @AssertTrue(message = "Passwords do not match")
     public boolean isPasswordsMatch() {
         return password != null && password.equals(confirmPassword);
     }
