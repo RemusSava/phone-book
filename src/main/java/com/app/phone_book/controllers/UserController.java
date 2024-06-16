@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -26,7 +25,7 @@ public class UserController {
 
     @GetMapping("/register")
     public String register() {
-        return "register";
+        return "pages/register";
     }
 
     @PostMapping("/register")
@@ -36,7 +35,7 @@ public class UserController {
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .toList();
             model.addAttribute("errors", errorMessages);
-            return "register";
+            return "pages/register";
         }
 
         try {
@@ -45,7 +44,7 @@ public class UserController {
             return "redirect:/login";   // Redirect to login page after successful registration
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            return "register";
+            return "pages/register";
         }
     }
 
