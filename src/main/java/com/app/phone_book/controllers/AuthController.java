@@ -1,6 +1,7 @@
 package com.app.phone_book.controllers;
 
 import com.app.phone_book.security.JwtUtil;
+import com.app.phone_book.services.AuthService;
 import com.app.phone_book.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,22 +23,23 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @GetMapping("/login")
     public String login() {
-        return "logins";
+        return "pages/login";
     }
 
     @PostMapping("/auth/login")
     public String login(@RequestParam String email, @RequestParam String password, HttpServletResponse response, Model model) {
         try {
-            String token = jwtUtil.generateToken(email, password);
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            return "redirect:/dashboard";
+            String redirect = authService.authenticateAndSetToken(email, password, response);
+            if (redirect == null) {
+                model.addAttribute("error", "Invalid credentials");
+                return "login";
+            }
+
+            return redirect;
         } catch (Exception e) {
             logger.error("Authentication failed!", e);
             model.addAttribute("error", "Invalid email or password");
