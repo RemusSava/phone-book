@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-
 
 @Data
 @Entity
@@ -40,6 +41,17 @@ public class User {
         @Column(name = "updated_at", nullable = false, updatable = true)
         private LocalDateTime updatedAt;
 
+        @ManyToMany
+        @JoinTable(
+                name = "user_roles",
+                joinColumns = @JoinColumn(name = "user_id"),
+                inverseJoinColumns = @JoinColumn(name = "role_id")
+        )
+        private Set<Role> roles = new HashSet<>();
+
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+        private Set<Contact> contacts = new HashSet<>();
+
         @PrePersist
         protected void onCreate() {
                 createdAt = LocalDateTime.now();
@@ -51,4 +63,3 @@ public class User {
                 updatedAt = LocalDateTime.now();
         }
 }
-

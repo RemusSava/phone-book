@@ -38,3 +38,32 @@ document.getElementById('sidebarToggleBtn').addEventListener('click', function (
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+            var editButtons = document.querySelectorAll('.edit-group-btn');
+
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var groupId = button.getAttribute('data-id');
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/groups/' + groupId, true);
+
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            var group = JSON.parse(xhr.responseText);
+                            document.getElementById('editId').value = group.id;
+                            document.getElementById('editName').value = group.name;
+                        } else {
+                            console.error('Error: ' + xhr.statusText);
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        console.error('Error: ' + xhr.statusText);
+                    };
+
+                    xhr.send();
+                });
+            });
+        });

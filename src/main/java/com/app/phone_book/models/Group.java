@@ -10,7 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -42,6 +43,5 @@ public class Group {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Contact> contacts;
-
+    private Set<Contact> contacts = new HashSet<>();
 }

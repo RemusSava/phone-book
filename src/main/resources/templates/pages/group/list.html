@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/auth-layout.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<section layout:fragment="content">
+    <!-- Content -->
+    <div class="content container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Groups List</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                Add Group
+            </button>
+        </div>
+        <div class="table-container">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="group, status : ${groups}">
+                <td th:text="${status.index + 1}">1</td>
+                <td th:text="${group.name}">Name</td>
+                <td th:text="${group.createdAt}">Created At</td>
+                <td>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-sm btn-primary edit-group-btn" th:data-id="${group.id}" data-bs-toggle="modal" data-bs-target="#editGroupModal">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-group-btn" th:data-id="${group.id}" data-bs-toggle="modal" data-bs-target="#deleteGroupModal">Delete</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+            <div th:insert="components/pagination :: pagination (currentPage=${currentPage}, totalPages=${totalPages}, size=${size}, baseUrl='/groups')"></div>
+        </div>
+    </div>
+
+    <div th:insert="modals/add-group :: add-group"></div>
+
+    <div th:insert="modals/edit-group :: edit-group"></div>
+
+    <div th:insert="modals/delete-group :: delete-group"></div>
+
+
+</section>
+
+</body>
+
+</html>
+
