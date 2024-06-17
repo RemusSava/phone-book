@@ -48,10 +48,6 @@ public class Contact {
     @Column(name = "updated_at", nullable = false, updatable = true)
     private LocalDateTime updatedAt;
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -63,8 +59,15 @@ public class Contact {
         updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
     private Group group;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

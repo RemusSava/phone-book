@@ -30,20 +30,25 @@ public class AuthController {
         return "pages/login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        return authService.logout(response);
+    }
+
     @PostMapping("/auth/login")
     public String login(@RequestParam String email, @RequestParam String password, HttpServletResponse response, Model model) {
         try {
             String redirect = authService.authenticateAndSetToken(email, password, response);
             if (redirect == null) {
                 model.addAttribute("error", "Invalid credentials");
-                return "login";
+                return "pages/login";
             }
 
             return redirect;
         } catch (Exception e) {
             logger.error("Authentication failed!", e);
             model.addAttribute("error", "Invalid email or password");
-            return "login";
+            return "pages/login";
         }
     }
 }
