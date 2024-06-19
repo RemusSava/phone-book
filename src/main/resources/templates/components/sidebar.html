@@ -1,11 +1,12 @@
-<div th:fragment="sidebar" class="sidebar py-3" id="sidebar">
+<div th:fragment="sidebar" class="sidebar bg-dark py-3" id="sidebar">
     <ul>
         <li><a th:href="@{/contacts}">Contacts</a></li>
         <li><a th:href="@{/groups}">Groups</a></li>
+        <hr>
+        <li class="my-2">
+            <a th:href="@{/logout}" class="text-white">
+                <i class="fas fa-user"></i> Logout
+            </a>
+        </li>
     </ul>
-    <div class="mt-auto p-3">
-        <a th:href="@{/logout}" class="btn btn-link text-white">
-            <i class="fas fa-user"></i> Logout
-        </a>
-    </div>
 </div>

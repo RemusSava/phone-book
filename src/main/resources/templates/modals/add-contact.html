@@ -39,11 +39,15 @@
                         <label for="latitude" class="form-label">Latitude</label>
                         <input type="number" step="any" class="form-control" id="latitude" name="latitude">
                     </div>
-                    <!--                        <div class="mb-3">-->
-                    <!--                            <label for="group" class="form-label">Group</label>-->
-                    <!--                            <input type="text" class="form-control" id="group" name="group">-->
-                    <!--                        </div>-->
-                    <button type="submit" class="btn btn-primary">Save Contact</button>
+                    <div class="mb-3">
+                        <label for="group" class="form-label">Group</label>
+                        <select class="form-control form-select" id="group" name="groupId">
+                            <option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.name}">Select Group</option>
+                        </select>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary my-4">Save Contact</button>
+                    </div>
                 </form>
             </div>
         </div>

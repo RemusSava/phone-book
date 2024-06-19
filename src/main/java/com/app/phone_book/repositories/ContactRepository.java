@@ -5,7 +5,6 @@ import com.app.phone_book.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -16,7 +15,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     Page<Contact> findByUser(User user, Pageable pageable);
 
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
     Contact save(Contact contact);
 }
