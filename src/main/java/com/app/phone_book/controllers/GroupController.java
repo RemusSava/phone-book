@@ -47,4 +47,10 @@ public class GroupController {
         groupService.saveGroup(group);
         return "redirect:/groups";
     }
+
+    @PostMapping("/delete/{id}")
+    public String deleteGroup(@PathVariable UUID id) {
+        groupService.deleteGroup(id);
+        return "redirect:/groups";
+    }
 }

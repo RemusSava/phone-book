@@ -25,6 +25,7 @@ document.getElementById('sidebarToggleBtn').addEventListener('click', function (
                         document.getElementById('editJobTitle').value = contact.jobTitle;
                         document.getElementById('editLongitude').value = contact.longitude;
                         document.getElementById('editLatitude').value = contact.latitude;
+
                     } else {
                         console.error('Error: ' + xhr.statusText);
                     }
@@ -38,6 +39,63 @@ document.getElementById('sidebarToggleBtn').addEventListener('click', function (
             });
         });
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteButtons = document.querySelectorAll('.delete-contact-btn');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var contactId = button.getAttribute('data-id');
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/contacts/' + contactId, true);
+
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        var contact = JSON.parse(xhr.responseText);
+                        document.getElementById('deleteContactForm').action = '/contacts/delete/' + contactId;
+                    } else {
+                        console.error('Error: ' + xhr.statusText);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    console.error('Error: ' + xhr.statusText);
+                };
+
+                xhr.send();
+            });
+        });
+    });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteButtons = document.querySelectorAll('.delete-group-btn');
+
+            deleteButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var groupId = button.getAttribute('data-id');
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/groups/' + groupId, true);
+
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            var contact = JSON.parse(xhr.responseText);
+                            document.getElementById('deleteGroupForm').action = '/groups/delete/' + groupId;
+                        } else {
+                            console.error('Error: ' + xhr.statusText);
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        console.error('Error: ' + xhr.statusText);
+                    };
+
+                    xhr.send();
+                });
+            });
+        });
 
     document.addEventListener('DOMContentLoaded', function () {
             var editButtons = document.querySelectorAll('.edit-group-btn');

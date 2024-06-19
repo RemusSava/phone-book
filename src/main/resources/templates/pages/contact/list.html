@@ -31,6 +31,7 @@
                 <th>Email</th>
                 <th>Address</th>
                 <th>Job</th>
+                <th>Group</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -42,6 +43,7 @@
                 <td th:text="${contact.email}">Email</td>
                 <td th:text="${contact.address}">Address</td>
                 <td th:text="${contact.jobTitle}">Job</td>
+                <td th:text="${contact.group != null} ? ${contact.group.name} : ''">Group</td>
                 <td>
                     <div class="action-buttons">
                         <button type="button" class="btn btn-sm btn-primary edit-contact-btn" th:data-id="${contact.id}" data-bs-toggle="modal" data-bs-target="#editContactModal">Edit</button>

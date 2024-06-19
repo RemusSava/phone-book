@@ -4,11 +4,13 @@ import com.app.phone_book.models.Contact;
 import com.app.phone_book.models.Group;
 import com.app.phone_book.repositories.ContactRepository;
 import com.app.phone_book.repositories.GroupRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,6 +23,10 @@ public class GroupService {
         return groupRepository.findAll(PageRequest.of(page, size));
     }
 
+    public List<Group> getAllGroupsWithoutPagination() {
+        return groupRepository.findAll();
+    }
+
     public Group saveGroup(Group group) {
         return groupRepository.save(group);
     }
@@ -29,7 +35,8 @@ public class GroupService {
         return groupRepository.findById(id);
     }
 
-    public void deleteGroup(Long id) {
+    @Transactional
+    public void deleteGroup(UUID id) {
         groupRepository.deleteById(id);
     }
 }
