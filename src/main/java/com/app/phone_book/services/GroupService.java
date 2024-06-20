@@ -39,4 +39,8 @@ public class GroupService {
     public void deleteGroup(UUID id) {
         groupRepository.deleteById(id);
     }
+
+    public long count() {
+        return groupRepository.count();
+    }
 }
