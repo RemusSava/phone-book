@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -30,36 +34,46 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        if (EXCLUDE_URLS.contains(requestURI)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         final String jwt = getJwtFromCookie(request);
 
         String username = null;
+        Collection<SimpleGrantedAuthority> authorities = Collections.emptyList();
 
         if (jwt != null) {
             try {
                 Claims claims = jwtUtil.extractAllClaims(jwt);
                 username = claims.getSubject();
+                List<String> roles = claims.get("roles", List.class);
+
+                if (roles != null) {
+                    authorities = roles.stream()
+                            .map(role -> new SimpleGrantedAuthority(role))
+                            .collect(Collectors.toList());
+                }
             } catch (Exception e) {
                 // Invalid token, handle the exception
             }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, username)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, null);
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
-        }else if (username == null) {
-            response.sendRedirect("/login");
+        if (username != null && EXCLUDE_URLS.contains(requestURI)) {
+            response.sendRedirect("/dashboard");
+            return;
+        } else if (EXCLUDE_URLS.contains(requestURI)) {
+            chain.doFilter(request, response);
             return;
         }
 
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtUtil.validateToken(jwt, username)) {
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        } else if (username == null) {
+            response.sendRedirect("/login");
+            return;
+        }
 
         chain.doFilter(request, response);
     }

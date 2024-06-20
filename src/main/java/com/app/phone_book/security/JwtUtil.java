@@ -1,31 +1,31 @@
 package com.app.phone_book.security;
 
-import com.app.phone_book.models.User;
-import com.app.phone_book.services.UserService;
+import com.app.phone_book.models.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
-
-import java.util.Date;
 
 @Component
 public class JwtUtil {
 
     private final String SECRET_KEY = "testxxxxxxxxxxxxxxxxxxxsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
 
-    public String generateToken(String email, String password) {
+    public String generateToken(String email, String password, List<String> roles) {
+        System.out.println(roles);
+        Map<String, Object> claims = Map.of("roles", roles);
+        return createToken(claims, email);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setSubject(email)
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
