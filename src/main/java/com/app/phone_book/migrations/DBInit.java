@@ -26,16 +26,12 @@ public class DBInit {
 
     private void insertInitialData() {
         for (UserRole role : UserRole.values()) {
-            String insertRole = "INSERT INTO roles (id, name, created_at) VALUES (SYS_GUID(), ?, CURRENT_TIMESTAMP)";
+            String insertRole = "INSERT INTO roles (id, name, created_at, updated_at) VALUES (SYS_GUID(), ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             jdbcTemplate.update(insertRole, role.name());
         }
 
-        String insertUser = "INSERT INTO users (id, password, email, created_at, updated_at) " +
-                "VALUES (SYS_GUID(),?, 'john@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        String insertUser = "INSERT INTO users (id, password, email, created_at, updated_at, role_id) " +
+                "VALUES (SYS_GUID(),?, 'john@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM roles WHERE name = 'ADMIN'))";
         jdbcTemplate.update(insertUser, passwordEncoder.encode("password123"));
-
-        String insertUserRole = "INSERT INTO user_roles (user_id, role_id) " +
-                "VALUES ((SELECT id FROM users WHERE email = 'john@example.com'), (SELECT id FROM roles WHERE name = 'ADMIN'))";
-        jdbcTemplate.update(insertUserRole);
     }
 }

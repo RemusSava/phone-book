@@ -1,11 +1,6 @@
 package com.app.phone_book.filters;
 
 import com.app.phone_book.security.JwtUtil;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,11 +10,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.Claims;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -34,45 +33,36 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        final String jwt = getJwtFromCookie(request);
-
-        String username = null;
-        Collection<SimpleGrantedAuthority> authorities = Collections.emptyList();
+        String jwt = getJwtFromCookie(request);
 
         if (jwt != null) {
             try {
                 Claims claims = jwtUtil.extractAllClaims(jwt);
-                username = claims.getSubject();
-                List<String> roles = claims.get("roles", List.class);
+                String username = claims.getSubject();
 
-                if (roles != null) {
-                    authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role))
-                            .collect(Collectors.toList());
+                if (jwtUtil.isTokenExpired(jwt)) {
+                    response.sendRedirect("/login");
+                    return;
                 }
+
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    if (jwtUtil.validateToken(jwt, username)) {
+                        String role = jwtUtil.extractRole(jwt);
+                        authenticateUser(username, role, request);
+                    }
+                }
+
+                if (EXCLUDE_URLS.contains(requestURI)) {
+                    response.sendRedirect("/dashboard");
+                    return;
+                }
+
             } catch (Exception e) {
                 // Invalid token, handle the exception
+                logger.error("Error processing JWT token: {}");
+                response.sendRedirect("/login");
+                return;
             }
-        }
-
-        if (username != null && EXCLUDE_URLS.contains(requestURI)) {
-            response.sendRedirect("/dashboard");
-            return;
-        } else if (EXCLUDE_URLS.contains(requestURI)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, username)) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
-        } else if (username == null) {
-            response.sendRedirect("/login");
-            return;
         }
 
         chain.doFilter(request, response);
@@ -88,5 +78,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
         return null;
+    }
+
+    private void authenticateUser(String username, String role, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(username, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
+
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }

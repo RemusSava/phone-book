@@ -2,10 +2,10 @@
     <ul>
         <li><a th:href="@{/contacts}">Contacts</a></li>
         <li><a th:href="@{/groups}">Groups</a></li>
-        <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"><a th:href="@{/admin/dashboard}">Manage Users</a></li>
+        <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a th:href="@{/admin/users}">Manage Users</a></li>
         <hr>
         <li class="my-2">
-            <a th:href="@{/logout}" class="text-white">
+            <a th:href="@{/auth/logout}" class="text-white">
                 <i class="fas fa-user"></i> Logout
             </a>
         </li>

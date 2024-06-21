@@ -1,15 +1,16 @@
 package com.app.phone_book.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -35,26 +36,17 @@ public class User {
         @Column(nullable = false)
         private String password;
 
+        @CreationTimestamp
         @Column(name = "created_at", nullable = false, updatable = false)
         private LocalDateTime createdAt;
 
-        @Column(name = "updated_at", nullable = false, updatable = true)
+        @UpdateTimestamp
+        @Column(name = "updated_at", nullable = false)
         private LocalDateTime updatedAt;
 
-        @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-        private Set<Role> roles;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JsonIgnore
+        @JoinColumn(name = "role_id", nullable = false)
+        private Role role;
 
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-        private Set<Contact> contacts = new HashSet<>();
-
-        @PrePersist
-        protected void onCreate() {
-                createdAt = LocalDateTime.now();
-                updatedAt = LocalDateTime.now();
-        }
-
-        @PreUpdate
-        protected void onUpdate() {
-                updatedAt = LocalDateTime.now();
-        }
 }

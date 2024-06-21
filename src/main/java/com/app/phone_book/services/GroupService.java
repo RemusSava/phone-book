@@ -1,8 +1,6 @@
 package com.app.phone_book.services;
 
-import com.app.phone_book.models.Contact;
 import com.app.phone_book.models.Group;
-import com.app.phone_book.repositories.ContactRepository;
 import com.app.phone_book.repositories.GroupRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +31,10 @@ public class GroupService {
 
     public Group getGroupById(UUID id) {
         return groupRepository.findById(id);
+    }
+
+    public Group getGroupByName(String name) {
+        return groupRepository.findByName(name);
     }
 
     @Transactional
