@@ -125,3 +125,61 @@ document.getElementById('sidebarToggleBtn').addEventListener('click', function (
                 });
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+                    var editButtons = document.querySelectorAll('.edit-user-btn');
+
+                    editButtons.forEach(function (button) {
+                        button.addEventListener('click', function () {
+                            var userId = button.getAttribute('data-id');
+
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('GET', '/admin/users/' + userId, true);
+
+                            xhr.onload = function () {
+                                if (xhr.status >= 200 && xhr.status < 300) {
+                                    var user = JSON.parse(xhr.responseText);
+                                    document.getElementById('editId').value = user.id;
+                                    document.getElementById('editEmail').value = user.email;
+                                } else {
+                                    console.error('Error: ' + xhr.statusText);
+                                }
+                            };
+
+                            xhr.onerror = function () {
+                                console.error('Error: ' + xhr.statusText);
+                            };
+
+                            xhr.send();
+                        });
+                    });
+                });
+
+                document.addEventListener('DOMContentLoaded', function () {
+                            var deleteButtons = document.querySelectorAll('.delete-user-btn');
+
+                            deleteButtons.forEach(function (button) {
+                                button.addEventListener('click', function () {
+                                    var userId = button.getAttribute('data-id');
+
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open('GET', '/admin/users/' + userId, true);
+
+                                    xhr.onload = function () {
+                                        if (xhr.status >= 200 && xhr.status < 300) {
+                                            var user = JSON.parse(xhr.responseText);
+                                            document.getElementById('deleteUserForm').action = '/admin/users/delete/' + userId;
+                                        } else {
+                                            console.error('Error: ' + xhr.statusText);
+                                        }
+                                    };
+
+                                    xhr.onerror = function () {
+                                        console.error('Error: ' + xhr.statusText);
+                                    };
+
+                                    xhr.send();
+                                });
+                            });
+                        });
+

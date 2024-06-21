@@ -43,13 +43,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtUtil.extractAllClaims(jwt);
                 username = claims.getSubject();
-                List<String> roles = claims.get("roles", List.class);
 
-                if (roles != null) {
-                    authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role))
-                            .collect(Collectors.toList());
+                if (jwtUtil.isTokenExpired(jwt)) {
+                    response.sendRedirect("/login");
+                    return;
                 }
+
             } catch (Exception e) {
                 // Invalid token, handle the exception
             }
@@ -65,8 +64,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.validateToken(jwt, username)) {
+                String role = jwtUtil.extractRole(jwt);
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(username, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
+
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

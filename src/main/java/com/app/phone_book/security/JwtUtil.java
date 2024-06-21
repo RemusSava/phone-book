@@ -1,6 +1,5 @@
 package com.app.phone_book.security;
 
-import com.app.phone_book.models.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
@@ -16,9 +15,8 @@ public class JwtUtil {
 
     private final String SECRET_KEY = "testxxxxxxxxxxxxxxxxxxxsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
 
-    public String generateToken(String email, String password, List<String> roles) {
-        System.out.println(roles);
-        Map<String, Object> claims = Map.of("roles", roles);
+    public String generateToken(String email, String password, String role) {
+        Map<String, Object> claims = Map.of("role", role);
         return createToken(claims, email);
     }
 
@@ -49,13 +47,17 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     public Boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public String extractJwtFromCookies(HttpServletRequest request) {

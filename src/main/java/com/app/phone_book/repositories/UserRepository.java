@@ -12,7 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findById(UUID id);
 
-    @EntityGraph(attributePaths = "roles")
     User findByEmail(String email);
 
     void deleteById(UUID id);

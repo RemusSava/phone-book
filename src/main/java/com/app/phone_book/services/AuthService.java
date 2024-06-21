@@ -1,15 +1,11 @@
 package com.app.phone_book.services;
 
-import com.app.phone_book.models.Role;
 import com.app.phone_book.models.User;
 import com.app.phone_book.security.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -26,12 +22,7 @@ public class AuthService {
             return null;
         }
 
-        System.out.println(authenticatedUser.getRoles());
-        List<String> roles = authenticatedUser.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
-
-        String token = jwtUtil.generateToken(authenticatedUser.getEmail(), authenticatedUser.getPassword(), roles);
+        String token = jwtUtil.generateToken(authenticatedUser.getEmail(), authenticatedUser.getPassword(), authenticatedUser.getRole().getName());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
@@ -45,7 +36,7 @@ public class AuthService {
         Cookie cookie = new Cookie("token", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(0); // This will delete the cookie
+        cookie.setMaxAge(0);
         response.addCookie(cookie);
 
         return "redirect:/login";

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Group Page</title>
+    <title>User Page</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
 </head>
 
@@ -22,9 +22,9 @@
             </ul>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Groups List</h2>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">
-                Add Group
+            <h2>Users List</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                Add User
             </button>
         </div>
         <div class="table-container">
@@ -32,34 +32,36 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="group, status : ${groups}">
+            <tr th:each="user, status : ${users}">
                 <td th:text="${status.index + 1}">1</td>
-                <td th:text="${group.name}">Name</td>
-                <td th:text="${group.createdAt}">Created At</td>
+                <td th:text="${user.email}">Name</td>
+                <td th:text="${user.role.name}">Role</td>
+                <td th:text="${user.createdAt}">Created At</td>
                 <td>
                     <div class="action-buttons">
-                        <button type="button" class="btn btn-sm btn-primary edit-group-btn" th:data-id="${group.id}" data-bs-toggle="modal" data-bs-target="#editGroupModal">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-group-btn" th:data-id="${group.id}" data-bs-toggle="modal" data-bs-target="#deleteGroupModal">Delete</button>
+                        <button type="button" class="btn btn-sm btn-primary edit-user-btn" th:data-id="${user.id}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-user-btn" th:data-id="${user.id}" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button>
                     </div>
                 </td>
             </tr>
             </tbody>
         </table>
-            <div th:insert="components/pagination :: pagination (currentPage=${currentPage}, totalPages=${totalPages}, size=${size}, baseUrl='/groups')"></div>
+            <div th:insert="components/pagination :: pagination (currentPage=${currentPage}, totalPages=${totalPages}, size=${size}, baseUrl='/admin/users')"></div>
         </div>
     </div>
 
-    <div th:insert="modals/add-group :: add-group"></div>
+    <div th:insert="modals/add-user :: add-user"></div>
 
-    <div th:insert="modals/edit-group :: edit-group"></div>
+    <div th:insert="modals/edit-user :: edit-user"></div>
 
-    <div th:insert="modals/delete-group :: delete-group"></div>
+    <div th:insert="modals/delete-user :: delete-user"></div>
 
 
 </section>

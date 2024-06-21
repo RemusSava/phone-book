@@ -70,7 +70,9 @@ public class ContactService {
         contactRepository.deleteById(id);
     }
 
-    public long count() {
-        return contactRepository.count();
+    public long count(String token) {
+        String userEmail = jwtUtil.extractUsername(token);
+        User authenticatedUser = userRepository.findByEmail(userEmail);
+        return contactRepository.countByUser(authenticatedUser);
     }
 }

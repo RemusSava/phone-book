@@ -15,6 +15,12 @@
 <section layout:fragment="content">
     <!-- Content -->
     <div class="content container my-5">
+        <!-- Error Messages Section -->
+        <div th:if="${not #lists.isEmpty(errors)}" class="alert alert-danger d-flex align-items-center">
+            <ul class="mb-0">
+                <li th:each="error : ${errors}" th:text="${error}"></li>
+            </ul>
+        </div>
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Contacts List</h2>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
