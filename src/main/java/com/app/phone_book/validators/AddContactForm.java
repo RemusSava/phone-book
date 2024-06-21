@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 public class AddContactForm {
 
+    private UUID id;
     @NotEmpty(message = "First name cannot be empty")
     private String firstName;
 

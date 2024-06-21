@@ -41,7 +41,7 @@ public class GroupController {
      */
     @GetMapping
     public String getAllGroups(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "1") int size, Model model) {
+                               @RequestParam(defaultValue = "5") int size, Model model) {
         try {
             Page<Group> groupPage = groupService.getAllGroups(page, size);
             model.addAttribute("groups", groupPage.getContent());
@@ -119,12 +119,6 @@ public class GroupController {
                             RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
 
-            Group findGroup = groupService.getGroupByName(groupData.getName());
-            if(findGroup != null){
-                redirectAttributes.addFlashAttribute("errors", "This name already exists");
-                return "redirect:/groups";
-            }
-
             if (bindingResult.hasErrors()) {
                 List<String> errorMessages = bindingResult.getAllErrors().stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -133,7 +127,14 @@ public class GroupController {
                 return "redirect:/groups";
             }
 
+            Group findGroup = groupService.getGroupByName(groupData.getName());
+            if (findGroup != null && !findGroup.getId().equals(groupData.getId())) {
+                redirectAttributes.addFlashAttribute("errors", "This name already exists");
+                return "redirect:/groups";
+            }
+
             Group group = AddGroupForm.convertToGroup(groupData);
+            group.setId(groupData.getId());
             groupService.saveGroup(group);
             return "redirect:/groups";
         } catch (Exception e) {

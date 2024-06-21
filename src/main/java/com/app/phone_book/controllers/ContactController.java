@@ -50,7 +50,7 @@ public class ContactController {
      * @return String representing the view name for contacts list
      */
     @GetMapping
-    public String getAllContacts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "1") int size, Model model, HttpServletRequest request) {
+    public String getAllContacts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, Model model, HttpServletRequest request) {
         try {
             String token = jwtUtil.extractJwtFromCookies(request);
             Page<Contact> contactPage = contactService.getAllContacts(page, size, token);
@@ -135,6 +135,7 @@ public class ContactController {
             }
 
             Contact contact = AddContactForm.convertToContact(contactData);
+            contact.setId(contactData.getId());
             contactService.saveContact(contact, null, contactData.getGroupId());
             return "redirect:/contacts";
         } catch (Exception e) {

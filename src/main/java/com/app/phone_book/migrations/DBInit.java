@@ -31,7 +31,7 @@ public class DBInit {
         }
 
         String insertUser = "INSERT INTO users (id, password, email, created_at, updated_at, role_id) " +
-                "VALUES (SYS_GUID(),?, 'john@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM roles WHERE name = 'ADMIN'))";
-        jdbcTemplate.update(insertUser, passwordEncoder.encode("password123"));
+                "VALUES (SYS_GUID(),?, 'test@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM roles WHERE name = 'ADMIN'))";
+        jdbcTemplate.update(insertUser, passwordEncoder.encode("password"));
     }
 }

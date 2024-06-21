@@ -18,4 +18,6 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     void deleteById(UUID id);
 
     Contact save(Contact contact);
+
+    long countByUser(User user);
 }

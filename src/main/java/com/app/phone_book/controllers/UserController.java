@@ -95,7 +95,7 @@ public class UserController {
      */
     @GetMapping("/admin/users")
     public String getAllUsers(@RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "1") int size, Model model) {
+                              @RequestParam(defaultValue = "5") int size, Model model) {
         try {
             Page<User> userPage = userService.getAllUsers(page, size);
             List<Role> roles = roleService.getAll();
@@ -138,7 +138,7 @@ public class UserController {
      * @return String representing the view name after adding user
      */
     @PostMapping("/admin/users/add")
-    public String addUser(@Valid EditUserForm formData, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addUser(@Valid AddUserForm formData, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
 
             User findUser = userService.findByEmail(formData.getEmail());
@@ -156,7 +156,7 @@ public class UserController {
                 return "redirect:/admin/users";
             }
 
-            User user = EditUserForm.convertToUser(formData);
+            User user = AddUserForm.convertToUser(formData);
             userService.save(user, formData.getRoleId());
             return "redirect:/admin/users";
         } catch (Exception e) {
@@ -173,12 +173,13 @@ public class UserController {
      * @return String representing the view name after editing user
      */
     @PostMapping("/admin/users/edit")
-    public String editUser(@Valid AddUserForm formData, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String editUser(@Valid EditUserForm formData, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
 
 
             User findUser = userService.findByEmail(formData.getEmail());
-            if(findUser != null){
+
+            if(findUser != null && !findUser.getId().equals(formData.getId())){
                 redirectAttributes.addFlashAttribute("errors", List.of("The Email already exists"));
                 return "redirect:/admin/users";
 
@@ -192,9 +193,10 @@ public class UserController {
                 return "redirect:/admin/users";
             }
 
+            User user = userService.findById(formData.getId());
+            user.setEmail(formData.getEmail());
+            userService.edit(user, formData.getRoleId(), formData.getPassword());
 
-            User user = AddUserForm.convertToUser(formData);
-            userService.save(user, formData.getRoleId());
             return "redirect:/admin/users";
         } catch (Exception e) {
 

@@ -49,6 +49,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User edit(User user, UUID roleId, String password) {
+
+        Role role = roleRepository.findById(roleId);
+
+        if(password != null && !password.isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(password);
+            user.setPassword(encodedPassword);
+        }
+
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
     public User register(RegisterForm registerForm) {
         // Check if user with the same email already exists
         if (userRepository.findByEmail(registerForm.getEmail()) != null) {

@@ -1,7 +1,9 @@
 package com.app.phone_book.controllers;
 
+import com.app.phone_book.security.JwtUtil;
 import com.app.phone_book.services.ContactService;
 import com.app.phone_book.services.GroupService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class DashboardController {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     /**
      * Displays the home dashboard.
      *
@@ -30,9 +35,10 @@ public class DashboardController {
      * @return String representing the view name for home dashboard
      */
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpServletRequest request) {
         try {
-            model.addAttribute("totalContacts", contactService.count());
+            String token = jwtUtil.extractJwtFromCookies(request);
+            model.addAttribute("totalContacts", contactService.count(token));
             model.addAttribute("totalGroups", groupService.count());
             return "pages/dashboard";
         } catch (Exception e) {
@@ -48,9 +54,10 @@ public class DashboardController {
      * @return String representing the view name for dashboard
      */
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(Model model, HttpServletRequest request) {
         try {
-            model.addAttribute("totalContacts", contactService.count());
+            String token = jwtUtil.extractJwtFromCookies(request);
+            model.addAttribute("totalContacts", contactService.count(token));
             model.addAttribute("totalGroups", groupService.count());
             return "pages/dashboard";
         } catch (Exception e) {
@@ -66,9 +73,10 @@ public class DashboardController {
      * @return String representing the view name for admin dashboard
      */
     @GetMapping("/admin/dashboard")
-    public String adminDashboard(Model model) {
+    public String adminDashboard(Model model, HttpServletRequest request) {
         try {
-            model.addAttribute("totalContacts", contactService.count());
+            String token = jwtUtil.extractJwtFromCookies(request);
+            model.addAttribute("totalContacts", contactService.count(token));
             model.addAttribute("totalGroups", groupService.count());
             return "pages/dashboard";
         } catch (Exception e) {
