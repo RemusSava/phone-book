@@ -9,7 +9,7 @@
                 <form id="editUserForm" th:action="@{/admin/users/edit}" method="post">
                     <input type="hidden" id="editId" name="id">
                     <div class="mb-3">
-                        <label for="editEmail" class="form-label">Email</label>
+                        <label for="editEmail" class="form-label">Email<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="editEmail" name="email" required>
                     </div>
                     <div class="mb-3">
