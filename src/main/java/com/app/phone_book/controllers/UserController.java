@@ -7,12 +7,14 @@ import com.app.phone_book.services.UserService;
 import com.app.phone_book.validators.AddUserForm;
 import com.app.phone_book.validators.EditUserForm;
 import com.app.phone_book.validators.RegisterForm;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling user-related operations.
@@ -95,16 +98,28 @@ public class UserController {
      */
     @GetMapping("/admin/users")
     public String getAllUsers(@RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "5") int size, Model model) {
+                              @RequestParam(defaultValue = "5") int size,
+                              @RequestParam(required = false) String email,
+                              @RequestParam(required = false) String role,
+                              Model model,
+                              HttpServletRequest request) {
         try {
-            Page<User> userPage = userService.getAllUsers(page, size);
+            Page<User> userPage = userService.getFilteredUsers(email, role, PageRequest.of(page, size));
             List<Role> roles = roleService.getAll();
+            String queryParams = request.getParameterMap().entrySet().stream()
+                    .filter(entry -> !entry.getKey().equals("page") && !entry.getKey().equals("size"))
+                    .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
+                    .collect(Collectors.joining("&"));
+            String paramsValue = (queryParams != null && !queryParams.isEmpty()) ? queryParams : "";
 
             model.addAttribute("roles", roles);
             model.addAttribute("users", userPage.getContent());
             model.addAttribute("size", size);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", userPage.getTotalPages());
+            model.addAttribute("email", email);
+            model.addAttribute("role", role);
+            model.addAttribute("params", paramsValue);
 
             if (userPage.isEmpty() && page > 0 && size > 0) {
                 return "redirect:/admin/users";

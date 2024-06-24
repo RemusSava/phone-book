@@ -183,3 +183,19 @@ document.getElementById('sidebarToggleBtn').addEventListener('click', function (
                             });
                         });
 
+function submitForm() {
+    const form = document.getElementById('filterForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (const pair of formData.entries()) {
+       if (pair[1].trim() !== '') {
+        params.append(pair[0], pair[1]);
+       }
+    }
+
+    const url = new URL(form.action);
+    console.log(params.toString());
+    window.location.href = params.toString() && params.toString() != "" ? `${url.pathname}?${params.toString()}` : `${url.pathname}`;
+}
+

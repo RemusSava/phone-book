@@ -1,12 +1,10 @@
 <div th:fragment="navbar">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" th:href="@{/dashboard}">Phone Book</a>
-            <div class="collapse navbar-collapse justify-content-end">
-                <button class="btn btn-link text-white" id="sidebarToggleBtn">
+                <button class="btn btn-link text-white" id="sidebarToggleBtn" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
                 </button>
-            </div>
         </div>
     </nav>
 </div>

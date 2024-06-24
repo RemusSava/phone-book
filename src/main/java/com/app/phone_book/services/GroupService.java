@@ -2,10 +2,12 @@ package com.app.phone_book.services;
 
 import com.app.phone_book.models.Group;
 import com.app.phone_book.repositories.GroupRepository;
+import com.app.phone_book.specifications.GroupSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,11 @@ public class GroupService {
 
     public Page<Group> getAllGroups(int page, int size) {
         return groupRepository.findAll(PageRequest.of(page, size));
+    }
+
+    public Page<Group> getFilteredUsers(String name, PageRequest pageRequest) {
+        Specification<Group> spec = GroupSpecification.filterByCriteria(name);
+        return groupRepository.findAll(spec, pageRequest);
     }
 
     public List<Group> getAllGroupsWithoutPagination() {

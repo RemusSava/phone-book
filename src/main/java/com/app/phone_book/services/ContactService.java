@@ -7,10 +7,12 @@ import com.app.phone_book.repositories.ContactRepository;
 import com.app.phone_book.repositories.GroupRepository;
 import com.app.phone_book.repositories.UserRepository;
 import com.app.phone_book.security.JwtUtil;
+import com.app.phone_book.specifications.ContactSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -30,12 +32,25 @@ public class ContactService {
     @Autowired
     private UserRepository userRepository;
 
-    public Page<Contact> getAllContacts(int page, int size, String token) {
+    public Page<Contact> getFilteredContacts(
+            String name,
+            String email,
+            String phoneNumber,
+            String address,
+            String job,
+            PageRequest pageRequest,
+            String token) {
+
         String userEmail = jwtUtil.extractUsername(token);
         User authenticatedUser = userRepository.findByEmail(userEmail);
+
         if (authenticatedUser != null) {
-            return contactRepository.findByUser(authenticatedUser, PageRequest.of(page, size));
+            Specification<Contact> spec = ContactSpecification.filterByCriteria(name, email, phoneNumber, address, job)
+                    .and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), authenticatedUser));
+
+            return contactRepository.findAll(spec, pageRequest);
         }
+
         throw new RuntimeException("User not authenticated");
     }
 
