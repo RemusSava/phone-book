@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling group-related operations.
@@ -41,13 +43,21 @@ public class GroupController {
      */
     @GetMapping
     public String getAllGroups(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "5") int size, Model model) {
+                               @RequestParam(defaultValue = "5") int size,
+                               @RequestParam(required = false) String name,
+                               Model model, HttpServletRequest request) {
         try {
-            Page<Group> groupPage = groupService.getAllGroups(page, size);
+            Page<Group> groupPage = groupService.getFilteredUsers(name, PageRequest.of(page, size));
+            String queryParams = request.getParameterMap().entrySet().stream()
+                    .filter(entry -> !entry.getKey().equals("page") && !entry.getKey().equals("size"))
+                    .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
+                    .collect(Collectors.joining("&"));
+            String paramsValue = (queryParams != null && !queryParams.isEmpty()) ? queryParams : "";
             model.addAttribute("groups", groupPage.getContent());
             model.addAttribute("size", size);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", groupPage.getTotalPages());
+            model.addAttribute("params", paramsValue);
 
             if (groupPage.isEmpty() && page > 0 && size > 0) {
                 return "redirect:/groups";

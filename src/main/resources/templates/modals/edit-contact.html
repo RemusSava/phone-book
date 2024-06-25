@@ -9,15 +9,15 @@
                 <form id="editContactForm" th:action="@{/contacts/edit}" method="post">
                     <input type="hidden" id="editId" name="id">
                     <div class="mb-3">
-                        <label for="editFirstName" class="form-label">First Name</label>
+                        <label for="editFirstName" class="form-label">First Name<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="editFirstName" name="firstName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editLastName" class="form-label">Last Name</label>
+                        <label for="editLastName" class="form-label">Last Name<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="editLastName" name="lastName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editPhone" class="form-label">Phone</label>
+                        <label for="editPhone" class="form-label">Phone<span class="text-danger">*</span></label>
                         <input type="tel" class="form-control" id="editPhone" name="phone" required>
                     </div>
                     <div class="mb-3">

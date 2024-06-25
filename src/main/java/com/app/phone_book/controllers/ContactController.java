@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling contact-related operations.
@@ -50,17 +52,37 @@ public class ContactController {
      * @return String representing the view name for contacts list
      */
     @GetMapping
-    public String getAllContacts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, Model model, HttpServletRequest request) {
+    public String getAllContacts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String job,
+            Model model,
+            HttpServletRequest request) {
         try {
             String token = jwtUtil.extractJwtFromCookies(request);
-            Page<Contact> contactPage = contactService.getAllContacts(page, size, token);
+            Page<Contact> contactPage = contactService.getFilteredContacts(name, email, phone, address, job, PageRequest.of(page, size), token);
             List<Group> groups = groupService.getAllGroupsWithoutPagination();
+            String queryParams = request.getParameterMap().entrySet().stream()
+                    .filter(entry -> !entry.getKey().equals("page") && !entry.getKey().equals("size"))
+                    .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
+                    .collect(Collectors.joining("&"));
+            String paramsValue = (queryParams != null && !queryParams.isEmpty()) ? queryParams : "";
 
             model.addAttribute("groups", groups);
             model.addAttribute("contacts", contactPage.getContent());
             model.addAttribute("size", size);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", contactPage.getTotalPages());
+            model.addAttribute("name", name);
+            model.addAttribute("email", email);
+            model.addAttribute("phoneNumber", phone);
+            model.addAttribute("address", address);
+            model.addAttribute("address", job);
+            model.addAttribute("params", paramsValue);
 
             if (contactPage.isEmpty() && page > 0 && size > 0) {
                 return "redirect:/contacts";
@@ -72,7 +94,6 @@ public class ContactController {
             return "error"; // Redirect to error page
         }
     }
-
     /**
      * Adds a new contact.
      *

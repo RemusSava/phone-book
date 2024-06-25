@@ -8,7 +8,7 @@
             <div class="modal-body">
                 <form th:action="@{/groups/add}" method="post">
                     <div class="mb-3">
-                        <label for="group" class="form-label">Name</label>
+                        <label for="group" class="form-label">Name<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="group" name="name" required>
                     </div>
 

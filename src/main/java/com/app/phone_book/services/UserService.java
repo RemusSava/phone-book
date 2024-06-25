@@ -3,11 +3,13 @@ package com.app.phone_book.services;
 import com.app.phone_book.models.*;
 import com.app.phone_book.repositories.RoleRepository;
 import com.app.phone_book.repositories.UserRepository;
+import com.app.phone_book.specifications.UserSpecification;
 import com.app.phone_book.validators.RegisterForm;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -96,8 +98,9 @@ public class UserService {
         return null;
     }
 
-    public Page<User> getAllUsers(int page, int size) {
-        return userRepository.findAll(PageRequest.of(page, size));
+    public Page<User> getFilteredUsers(String email, String roleName, PageRequest pageRequest) {
+        Specification<User> spec = UserSpecification.filterByCriteria(email, roleName);
+        return userRepository.findAll(spec, pageRequest);
     }
 
     public Optional<User> getUserByEmail(String email) {

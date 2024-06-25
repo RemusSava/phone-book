@@ -21,6 +21,38 @@
                 <li th:each="error : ${errors}" th:text="${error}"></li>
             </ul>
         </div>
+
+        <!-- Filter Form Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="filterForm" action="#" th:action="@{/contacts}" method="get" class="row g-3">
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <label for="name" class="form-label fw-bold">Name</label>
+                        <input type="text" id="name" name="name" th:value="${param.name}" class="form-control" placeholder="Enter name"/>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <label for="phone" class="form-label fw-bold">Phone</label>
+                        <input type="text" id="phone" name="phone" th:value="${param.phone}" class="form-control" placeholder="Enter phone"/>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <label for="email" class="form-label fw-bold">Email</label>
+                        <input type="text" id="email" name="email" th:value="${param.email}" class="form-control" placeholder="Enter email"/>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <label for="address" class="form-label fw-bold">Address</label>
+                        <input type="text" id="address" name="address" th:value="${param.address}" class="form-control" placeholder="Enter address"/>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <label for="job" class="form-label fw-bold">Job</label>
+                        <input type="text" id="job" name="job" th:value="${param.job}" class="form-control" placeholder="Enter job"/>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2 d-flex align-items-end">
+                        <button type="button" onclick="submitForm()" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Contacts List</h2>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
@@ -28,51 +60,44 @@
             </button>
         </div>
         <div class="table-container">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Job</th>
-                <th>Group</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="contact, status : ${contacts}">
-                <td th:text="${status.index + 1}">1</td>
-                <td th:text="${contact.fullName}">Full Name</td>
-                <td th:text="${contact.phone}">Phone</td>
-                <td th:text="${contact.email}">Email</td>
-                <td th:text="${contact.address}">Address</td>
-                <td th:text="${contact.jobTitle}">Job</td>
-                <td th:text="${contact.group != null} ? ${contact.group.name} : ''">Group</td>
-                <td>
-                    <div class="action-buttons">
-                        <button type="button" class="btn btn-sm btn-primary edit-contact-btn" th:data-id="${contact.id}" data-bs-toggle="modal" data-bs-target="#editContactModal">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-contact-btn" th:data-id="${contact.id}" data-bs-toggle="modal" data-bs-target="#deleteContactModal">Delete</button>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-            <div th:insert="components/pagination :: pagination (currentPage=${currentPage}, totalPages=${totalPages}, size=${size}, baseUrl='/contacts')"></div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Job</th>
+                    <th>Group</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="contact, status : ${contacts}">
+                    <td th:text="${status.index + currentPage * size + 1}">1</td>
+                    <td th:text="${contact.fullName}">Full Name</td>
+                    <td th:text="${contact.phone}">Phone</td>
+                    <td th:text="${contact.email}">Email</td>
+                    <td th:text="${contact.address}">Address</td>
+                    <td th:text="${contact.jobTitle}">Job</td>
+                    <td th:text="${contact.group != null} ? ${contact.group.name} : ''">Group</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-sm btn-primary edit-contact-btn" th:data-id="${contact.id}" data-bs-toggle="modal" data-bs-target="#editContactModal">Edit</button>
+                            <button class="btn btn-sm btn-danger delete-contact-btn" th:data-id="${contact.id}" data-bs-toggle="modal" data-bs-target="#deleteContactModal">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:insert="components/pagination :: pagination (currentPage=${currentPage}, totalPages=${totalPages}, size=${size}, baseUrl='/contacts', params=${params})"></div>
         </div>
     </div>
 
     <div th:insert="modals/add-contact :: add-contact"></div>
-
     <div th:insert="modals/edit-contact :: edit-contact"></div>
-
     <div th:insert="modals/delete-contact :: delete-contact"></div>
-
-
 </section>
-
 </body>
-
 </html>
-

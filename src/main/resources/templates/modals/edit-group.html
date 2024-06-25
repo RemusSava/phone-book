@@ -9,7 +9,7 @@
                 <form id="editGroupForm" th:action="@{/groups/edit}" method="post">
                     <input type="hidden" id="editId" name="id">
                     <div class="mb-3">
-                        <label for="editName" class="form-label">Name</label>
+                        <label for="editName" class="form-label">Name<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="editName" name="name" required>
                     </div>
                     <div class="text-center">
